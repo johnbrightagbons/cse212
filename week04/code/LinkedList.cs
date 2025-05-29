@@ -1,4 +1,6 @@
 using System.Collections;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 public class LinkedList : IEnumerable<int>
 {
@@ -33,6 +35,24 @@ public class LinkedList : IEnumerable<int>
     public void InsertTail(int value)
     {
         // TODO Problem 1
+        // Solution:
+        // Create new node
+        Node newNode = new(value);
+
+        // If the list is empty, then point both head and tail to the new node.
+        if (_tail is null)
+        {
+            _head = newNode;
+            _tail = newNode;
+        }
+
+        // If the list is not empty, then only the tail will be affected
+        else
+        {
+            _tail.Next = newNode; // Connect the current tail to the new node
+            newNode.Prev = _tail; // Connect the new node to the current tail   
+            _tail = newNode; // Update the tail to point to the new node
+        }
     }
 
 
@@ -65,6 +85,23 @@ public class LinkedList : IEnumerable<int>
     public void RemoveTail()
     {
         // TODO Problem 2
+        // Solution:
+        // If the list has only one item in it, then set the head and tail
+        // to null resulting in an empty list. This condition will also
+        // cover an empty list. Its okay to set to null again
+        if (_head == _tail)
+        {
+            _head = null;
+            _tail = null;
+        }
+
+        // If the list has more than one item in it, then only the tail 
+        // will bee affected
+        else if (_tail is not null)
+        {
+            _tail.Prev!.Next = null; // Disconnect the second to the last tail from the last node
+            _tail = _tail.Prev; // Update the tail to point to the second to last node
+        }
     }
 
     /// <summary>
@@ -109,7 +146,34 @@ public class LinkedList : IEnumerable<int>
     public void Remove(int value)
     {
         // TODO Problem 3
+        // Solution:
+        Node? current = _head; // Start at the head of the list
+        while (current is not null)
+        {
+            if (current.Data == value)
+            {
+                // If the node to remove is the head
+                if (current == _head)
+                {
+                    RemoveHead();
+                }
+                // If the node to remove is the tail
+                else if (current == _tail)
+                {
+                    RemoveTail();
+                }
+                // If the node is in the middle
+                else
+                {
+                    current.Prev!.Next = current.Next;
+                    current.Next!.Prev = current.Prev;
+                }
+                return; // Only remove the first occurrence
+            }
+            current = current.Next;
+        }
     }
+
 
     /// <summary>
     /// Search for all instances of 'oldValue' and replace the value to 'newValue'.
@@ -117,8 +181,17 @@ public class LinkedList : IEnumerable<int>
     public void Replace(int oldValue, int newValue)
     {
         // TODO Problem 4
+        // Solution:
+        Node? current = _head; // Start at the head of the list
+        while (current is not null)
+        {
+            if (current.Data == oldValue)
+            {
+                current.Data = newValue; // Replace the value in the current node
+            }
+            current = current.Next; // Move to the next node
+        }
     }
-
     /// <summary>
     /// Yields all values in the linked list
     /// </summary>
@@ -147,7 +220,14 @@ public class LinkedList : IEnumerable<int>
     public IEnumerable Reverse()
     {
         // TODO Problem 5
-        yield return 0; // replace this line with the correct yield return statement(s)
+        // Solution:
+        var curr = _tail; // Start at the end since this is a backward iteration.
+        while (curr is not null)
+        {
+            yield return curr.Data; // Provide each item to the user
+            curr = curr.Prev; // Go backward in the linked list  
+        }
+       // yield return 0; // replace this line with the correct yield return statement(s)
     }
 
     public override string ToString()
@@ -168,8 +248,29 @@ public class LinkedList : IEnumerable<int>
     }
 }
 
-public static class IntArrayExtensionMethods {
-    public static string AsString(this IEnumerable array) {
+public static class IntArrayExtensionMethods
+{
+    public static string AsString(this IEnumerable array)
+    {
         return "<IEnumerable>{" + string.Join(", ", array.Cast<int>()) + "}";
     }
 }
+
+// What is the difference between a linked list and a dynamic array?
+// A linked list is a collection of nodes where each node points to the next node, 
+// allowing for efficient insertions and deletions. A dynamic array is a contiguous block of memory
+// that can grow or shrink, but requires shifting elements for insertions and deletions, 
+// which can be less efficient.
+
+// What is one of the strengths of a linked list?
+// One of the strengths of a linked list is that it allows for efficient insertions and deletions 
+// at any position in the list without needing to shift elements, as is required in a dynamic array. 
+// This makes linked lists particularly useful for applications where frequent modifications to the
+// collection are expected.
+
+// What is one of the drawbacks of a linked list?
+// One of the drawbacks of a linked list is that it requires more memory per element due to
+// the storage of additional pointers (next and previous) for each node, which can lead to
+// higher overhead compared to a dynamic array. Additionally, accessing elements in a linked list 
+// is generally slower than in a dynamic array because it requires traversing the list sequentially 
+// rather than direct indexing.
