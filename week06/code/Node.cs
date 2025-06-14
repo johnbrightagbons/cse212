@@ -8,10 +8,13 @@ public class Node
     {
         this.Data = data;
     }
-
     public void Insert(int value)
     {
         // TODO Start Problem 1
+        //  This method inserts a new value into 
+        // the binary search tree.
+        //  If the value is less than the current node's data,
+        //  it goes to the left subtree.
 
         if (value < Data)
         {
@@ -21,7 +24,7 @@ public class Node
             else
                 Left.Insert(value);
         }
-        else
+        else if (value > Data)  // Changed from 'else' to 'else if (value > Data)'
         {
             // Insert to the right
             if (Right is null)
@@ -30,16 +33,44 @@ public class Node
                 Right.Insert(value);
         }
     }
-
     public bool Contains(int value)
     {
         // TODO Start Problem 2
-        return false;
-    }
+        // This checks if the given value is present 
+        // in the binary search tree.
+        if (value == Data)
+            return true;
 
+        if (value < Data)
+        {
+            return Left != null && Left.Contains(value);
+        }
+        else
+        {
+            // Search the right subtree
+            return Right != null && Right.Contains(value);
+        }
+
+    }
     public int GetHeight()
     {
         // TODO Start Problem 4
-        return 0; // Replace this line with the correct return statement(s)
+        // This method calculates the height of the binary search tree.
+        // Base case: If this leaf node has no children, then height is 0
+        // if (Left == null && Right == null)
+        //  return 0;
+
+        // Initialize heights of left and right subtrees 
+        int leftHeight = 0; // Initialize left height
+        int rightHeight = 0; // Initialize right height
+
+        if (Left != null)
+            leftHeight = Left.GetHeight(); // Recursively get height of left subtree
+
+        if (Right != null)
+            rightHeight = Right.GetHeight(); // Recursively get height of right subtree
+
+        // The height of the current node is 1 plus the maximum height of its subtrees
+        return Math.Max(leftHeight, rightHeight) + 1;
     }
 }
